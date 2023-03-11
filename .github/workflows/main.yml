@@ -17,7 +17,7 @@ jobs:
           sed --in-place --expression='s@#BUILDDIR=.*@BUILDDIR=/tmp/makepkg@' /etc/makepkg.conf
           sed --in-place --expression='s@#PKGDEST=.*@PKGDEST=/tmp/packages@' /etc/makepkg.conf
           sed --in-place --expression='s@#SRCDEST=.*@SRCDEST=/tmp/sources@' /etc/makepkg.conf
-          sed --in-place --expression='s@#PACKAGER=.*@PACKAGER="bgh <arch at bgh dot io>""@' /etc/makepkg.conf
+          sed --in-place --expression='s@#PACKAGER=.*@PACKAGER="bgh <arch at bgh dot io>"@' /etc/makepkg.conf
           useradd --create-home build_user
           echo "build_user ALL=(ALL) NOPASSWD: /usr/bin/pacman" > /etc/sudoers.d/build_user
       - name: Build package
