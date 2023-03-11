@@ -1,0 +1,37 @@
+name: Make package
+
+on:
+  workflow_dispatch:
+
+jobs:
+  pkgbuild:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:base-devel
+    steps:
+      - uses: actions/checkout@v3
+      - name: Sync and update container
+        run: pacman --sync --sysupgrade --refresh --noconfirm
+      - name: Prepare environment for build user
+        run: |
+          sed --in-place --expression='s@#BUILDDIR=.*@BUILDDIR=/tmp/makepkg@' /etc/makepkg.conf
+          sed --in-place --expression='s@#PKGDEST=.*@PKGDEST=/tmp/packages@' /etc/makepkg.conf
+          sed --in-place --expression='s@#SRCDEST=.*@SRCDEST=/tmp/sources@' /etc/makepkg.conf
+          useradd --create-home build_user
+          echo "build_user ALL=(ALL) NOPASSWD: /usr/bin/pacman" > /etc/sudoers.d/build_user
+      - name: Build package
+        run: |
+          cd pkgbuild/cloud-init
+          su build_user
+          echo "${{ secrets.GPG_PRIVKEY_B64 }}" | base64 --decode | gpg --batch --import
+          su build_user --command "makepkg --syncdeps --noconfirm"
+          gpg --detach-sign --pinentry-mode loopback --batch --passphrase "${{ secrets.GPG_PASSPHRASE }}" --sign /tmp/packages/cloud-init-23.1.1-1-any.pkg.tar.zst
+      - name: Upload to repo
+        run: |
+          curl --request PUT --url "https://la.storage.bunnycdn.com/bgh-cdn/arch/custom-bgh/os/x86_64/cloud-init-23.1.1-1-any.pkg.tar.zst" --header "AccessKey: ${{ secrets.BUNNY_ACCESSKEY }}" --header "Content-Type: application/octet-stream" --data-binary "@/tmp/packages/cloud-init-23.1.1-1-any.pkg.tar.zst"
+          curl --request PUT --url "https://la.storage.bunnycdn.com/bgh-cdn/arch/custom-bgh/os/x86_64/cloud-init-23.1.1-1-any.pkg.tar.zst.sig" --header "AccessKey: ${{ secrets.BUNNY_ACCESSKEY }}" --header "Content-Type: application/octet-stream" --data-binary "@/tmp/packages/cloud-init-23.1.1-1-any.pkg.tar.zst.sig"
+      - name: Update db
+        run: |
+          curl -remote-name --location https://cdn.bgh.io/arch/custom-bgh/os/x86_64/custom-bgh.db.tar.gz
+          repo-add custom-bgh.db.tar.gz /tmp/packages/cloud-init-23.1.1-1-any.pkg.tar.zst
+          curl --request PUT --url "https://la.storage.bunnycdn.com/bgh-cdn/arch/custom-bgh/os/x86_64/custom-bgh.db" --header "AccessKey: ${{ secrets.BUNNY_ACCESSKEY }}" --header "Content-Type: application/octet-stream" --data-binary "@custom-bgh.db.tar.gz"
