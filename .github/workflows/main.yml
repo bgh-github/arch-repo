@@ -57,7 +57,7 @@ jobs:
             || true
           curl --fail \
             --remote-name \
-            ${{ env.repo_base_url }}/${{ env.repo_name }}/os/x86_64/${{ env.repo_name }}.db.sig" \
+            "${{ env.repo_base_url }}/${{ env.repo_name }}/os/x86_64/${{ env.repo_name }}.db.sig" \
             || true
           if [ -f "${{ env.repo_name }}.db" ]; then gpg --verify "${{ env.repo_name }}.db.sig"; fi
           repo-add --sign "${{ env.repo_name }}.db.tar.gz" /tmp/packages/cloud-init-23.1.1-1-any.pkg.tar.zst
