@@ -10,6 +10,8 @@ jobs:
       image: archlinux:base-devel
     env:
       repo_name: custom-bgh
+      repo_base_url: https://repo.bgh.io/arch
+      repo_api_url : https://la.storage.bunnycdn.com/bgh-repo/arch
     steps:
       - uses: actions/checkout@v3
       - name: Sync and update container
@@ -31,16 +33,35 @@ jobs:
           su build_user
           echo "${{ secrets.GPG_PRIVKEY_B64 }}" | base64 --decode | gpg --batch --import
           su build_user --command "makepkg --syncdeps --noconfirm"
-          gpg --detach-sign --pinentry-mode loopback --batch --passphrase "${{ secrets.GPG_PASSPHRASE }}" --sign /tmp/packages/cloud-init-23.1.1-1-any.pkg.tar.zst
+          gpg --detach-sign \
+            --pinentry-mode loopback \
+            --batch --passphrase "${{ secrets.GPG_PASSPHRASE }}" \
+            --sign /tmp/packages/cloud-init-23.1.1-1-any.pkg.tar.zst
       - name: Upload to repo
         run: |
-          curl --request PUT --url "https://la.storage.bunnycdn.com/bgh-cdn/arch/${repo_name}/os/x86_64/cloud-init-23.1.1-1-any.pkg.tar.zst" --header "AccessKey: ${{ secrets.BUNNY_ACCESSKEY }}" --header "Content-Type: application/octet-stream" --data-binary "@/tmp/packages/cloud-init-23.1.1-1-any.pkg.tar.zst"
-          curl --request PUT --url "https://la.storage.bunnycdn.com/bgh-cdn/arch/${repo_name}/os/x86_64/cloud-init-23.1.1-1-any.pkg.tar.zst.sig" --header "AccessKey: ${{ secrets.BUNNY_ACCESSKEY }}" --header "Content-Type: application/octet-stream" --data-binary "@/tmp/packages/cloud-init-23.1.1-1-any.pkg.tar.zst.sig"
+          curl --request PUT \
+            --url "${{ env.repo_api_url  }}/${{ env.repo_name }}/os/x86_64/cloud-init-23.1.1-1-any.pkg.tar.zst" \
+            --header "AccessKey: ${{ secrets.BUNNY_ACCESSKEY }}" \
+            --header "Content-Type: application/octet-stream" \
+            --data-binary "@/tmp/packages/cloud-init-23.1.1-1-any.pkg.tar.zst"
+          curl --request PUT \
+            --url "${{ env.repo_api_url  }}/${{ env.repo_name }}/os/x86_64/cloud-init-23.1.1-1-any.pkg.tar.zst.sig" \
+            --header "AccessKey: ${{ secrets.BUNNY_ACCESSKEY }}" \
+            --header "Content-Type: application/octet-stream" \
+            --data-binary "@/tmp/packages/cloud-init-23.1.1-1-any.pkg.tar.zst.sig"
       - name: Update db
         run: |
-          curl --remote-name --location "https://cdn.bgh.io/arch/${repo_name}/os/x86_64/${repo_name}.db"
-          curl --remote-name --location "https://cdn.bgh.io/arch/${repo_name}/os/x86_64/${repo_name}.db.sig"
-          gpg --verify "${repo_name}.db.sig" || exit
-          repo-add --sign "${repo_name}.db.tar.gz" /tmp/packages/cloud-init-23.1.1-1-any.pkg.tar.zst
-          curl --request PUT --url "https://la.storage.bunnycdn.com/bgh-cdn/arch/${repo_name}/os/x86_64/${repo_name}.db" --header "AccessKey: ${{ secrets.BUNNY_ACCESSKEY }}" --header "Content-Type: application/octet-stream" --data-binary "@${repo_name}.db.tar.gz"
-          curl --request PUT --url "https://la.storage.bunnycdn.com/bgh-cdn/arch/${repo_name}/os/x86_64/${repo_name}.db.sig" --header "AccessKey: ${{ secrets.BUNNY_ACCESSKEY }}" --header "Content-Type: application/octet-stream" --data-binary "@${repo_name}.db.tar.gz.sig"
+          curl --remote-name --location "${{ env.repo_base_url }}/${{ env.repo_name }}/os/x86_64/${{ env.repo_name }}.db"
+          curl --remote-name --location "${{ env.repo_base_url }}/${{ env.repo_name }}/os/x86_64/${{ env.repo_name }}.db.sig"
+          gpg --verify "${{ env.repo_name }}.db.sig" || exit
+          repo-add --sign "${{ env.repo_name }}.db.tar.gz" /tmp/packages/cloud-init-23.1.1-1-any.pkg.tar.zst
+          curl --request PUT \
+            --url "${{ env.repo_api_url  }}/${{ env.repo_name }}/os/x86_64/${{ env.repo_name }}.db" \
+            --header "AccessKey: ${{ secrets.BUNNY_ACCESSKEY }}" \
+            --header "Content-Type: application/octet-stream" \
+            --data-binary "@${{ env.repo_name }}.db.tar.gz"
+          curl --request PUT \
+            --url "${{ env.repo_api_url  }}/${{ env.repo_name }}/os/x86_64/${{ env.repo_name }}.db.sig" \
+            --header "AccessKey: ${{ secrets.BUNNY_ACCESSKEY }}" \
+            --header "Content-Type: application/octet-stream" \
+            --data-binary "@${{ env.repo_name }}.db.tar.gz.sig"
