@@ -34,5 +34,6 @@ jobs:
       - name: Update db
         run: |
           curl -remote-name --location https://cdn.bgh.io/arch/custom-bgh/os/x86_64/custom-bgh.db.tar.gz
-          repo-add custom-bgh.db.tar.gz /tmp/packages/cloud-init-23.1.1-1-any.pkg.tar.zst
+          repo-add --sign custom-bgh.db.tar.gz /tmp/packages/cloud-init-23.1.1-1-any.pkg.tar.zst
           curl --request PUT --url "https://la.storage.bunnycdn.com/bgh-cdn/arch/custom-bgh/os/x86_64/custom-bgh.db" --header "AccessKey: ${{ secrets.BUNNY_ACCESSKEY }}" --header "Content-Type: application/octet-stream" --data-binary "@custom-bgh.db.tar.gz"
+          curl --request PUT --url "https://la.storage.bunnycdn.com/bgh-cdn/arch/custom-bgh/os/x86_64/custom-bgh.db.sig" --header "AccessKey: ${{ secrets.BUNNY_ACCESSKEY }}" --header "Content-Type: application/octet-stream" --data-binary "@custom-bgh.db.tar.gz.sig"
