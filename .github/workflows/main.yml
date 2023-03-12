@@ -51,8 +51,14 @@ jobs:
             --data-binary "@/tmp/packages/cloud-init-23.1.1-1-any.pkg.tar.zst.sig"
       - name: Update db
         run: |
-          curl --fail --remote-name --silent "${{ env.repo_base_url }}/${{ env.repo_name }}/os/x86_64/${{ env.repo_name }}.db"
-          curl --fail --remote-name --silent ${{ env.repo_base_url }}/${{ env.repo_name }}/os/x86_64/${{ env.repo_name }}.db.sig"
+          curl --fail \
+            --remote-name \
+            "${{ env.repo_base_url }}/${{ env.repo_name }}/os/x86_64/${{ env.repo_name }}.db" ||
+            echo continuing
+          curl --fail \
+            --remote-name \
+            ${{ env.repo_base_url }}/${{ env.repo_name }}/os/x86_64/${{ env.repo_name }}.db.sig" ||
+            echo continuing
           if [ -f "${{ env.repo_name }}.db" ]; then gpg --verify "${{ env.repo_name }}.db.sig"; fi
           repo-add --sign "${{ env.repo_name }}.db.tar.gz" /tmp/packages/cloud-init-23.1.1-1-any.pkg.tar.zst
           curl --request PUT \
