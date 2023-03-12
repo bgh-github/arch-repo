@@ -53,7 +53,7 @@ jobs:
         run: |
           curl --remote-name --location "${{ env.repo_base_url }}/${{ env.repo_name }}/os/x86_64/${{ env.repo_name }}.db"
           curl --remote-name --location "${{ env.repo_base_url }}/${{ env.repo_name }}/os/x86_64/${{ env.repo_name }}.db.sig"
-          gpg --verify "${{ env.repo_name }}.db.sig" || exit
+          if [ -f "${{ env.repo_name }}.db" ]; then gpg --verify "${{ env.repo_name }}.db.sig" || exit; fi
           repo-add --sign "${{ env.repo_name }}.db.tar.gz" /tmp/packages/cloud-init-23.1.1-1-any.pkg.tar.zst
           curl --request PUT \
             --url "${{ env.repo_api_url  }}/${{ env.repo_name }}/os/x86_64/${{ env.repo_name }}.db" \
