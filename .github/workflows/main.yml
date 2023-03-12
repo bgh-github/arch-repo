@@ -37,7 +37,7 @@ jobs:
             --pinentry-mode loopback \
             --batch --passphrase "${{ secrets.GPG_PASSPHRASE }}" \
             --sign /tmp/packages/cloud-init-23.1.1-1-any.pkg.tar.zst
-      - name: Upload to repo
+      - name: Upload package to repository
         run: |
           curl --request PUT \
             --url "${{ env.repo_api_url  }}/${{ env.repo_name }}/os/x86_64/cloud-init-23.1.1-1-any.pkg.tar.zst" \
@@ -49,16 +49,16 @@ jobs:
             --header "AccessKey: ${{ secrets.BUNNY_ACCESSKEY }}" \
             --header "Content-Type: application/octet-stream" \
             --data-binary "@/tmp/packages/cloud-init-23.1.1-1-any.pkg.tar.zst.sig"
-      - name: Update db
+      - name: Update repository package database
         run: |
           curl --fail \
             --remote-name \
             "${{ env.repo_base_url }}/${{ env.repo_name }}/os/x86_64/${{ env.repo_name }}.db" ||
-            echo continuing
+            echo "continuing"
           curl --fail \
             --remote-name \
             ${{ env.repo_base_url }}/${{ env.repo_name }}/os/x86_64/${{ env.repo_name }}.db.sig" ||
-            echo continuing
+            echo "continuing"
           if [ -f "${{ env.repo_name }}.db" ]; then gpg --verify "${{ env.repo_name }}.db.sig"; fi
           repo-add --sign "${{ env.repo_name }}.db.tar.gz" /tmp/packages/cloud-init-23.1.1-1-any.pkg.tar.zst
           curl --request PUT \
