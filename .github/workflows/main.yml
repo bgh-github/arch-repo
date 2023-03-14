@@ -37,12 +37,12 @@ jobs:
           do
             cd "${pkgdir}" || exit
             su build_user --command "makepkg --syncdeps --noconfirm"
-            gpg \
+            gpg \ls
               --detach-sign \
               --pinentry-mode loopback \
               --batch \
               --passphrase "${{ secrets.GPG_PASSPHRASE }}" \
-              "/tmp/packages/$(ls ./*.pkg.tar.zst)"
+              "/tmp/packages/$(ls "/tmp/packages/${pkgdir}*.pkg.tar.zst")"
             done
       - name: Download and verify current repository package database
         run: |
