@@ -35,8 +35,7 @@ jobs:
         run: |
           for pkgdir in pkgbuild/*/
           do
-            cd "${pkgdir}" || exit
-            su build_user --command "makepkg --syncdeps --noconfirm"
+            su build_user --command "cd "${pkgdir}"; makepkg --syncdeps --noconfirm"
             gpg \
               --detach-sign \
               --pinentry-mode loopback \
