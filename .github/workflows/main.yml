@@ -31,7 +31,7 @@ jobs:
       - name: Import signing key
         run: |
           echo "${{ secrets.GPG_PRIVKEY_B64 }}" | base64 --decode | gpg --batch --import
-      - name: Build package
+      - name: Build packages
         run: |
           for pkgdir in pkgbuild/*/
           do
