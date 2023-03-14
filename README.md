@@ -13,3 +13,5 @@ sudo sed \
   --expression='\@^\[core\]$@i [custom-bgh]\nSigLevel = Required\nServer = https://repo.bgh.io/arch/$repo/os/$arch\n' \
   /etc/pacman.conf
 ```
+
+[![Make packages](https://github.com/bgh-github/arch-repo/actions/workflows/main.yml/badge.svg)](https://github.com/bgh-github/arch-repo/actions/workflows/main.yml)
