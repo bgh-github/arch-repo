@@ -37,7 +37,7 @@ jobs:
           do
             cd "${pkgdir}" || exit
             su build_user --command "makepkg --syncdeps --noconfirm"
-            gpg
+            gpg \
               --detach-sign \
               --pinentry-mode loopback \
               --batch \
@@ -75,7 +75,7 @@ jobs:
               --data-binary "@${pkgfile}.sig"
             repo-add --sign "${{ env.repo_name }}.db.tar.gz" "${pkgfile}.sig"
           done
-          gpg
+          gpg \
             --detach-sign \
             --pinentry-mode loopback \
             --batch \
