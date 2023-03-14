@@ -56,7 +56,7 @@ jobs:
               "${{ env.repo_base_url }}/${{ env.repo_name }}/os/x86_64/${{ env.repo_name }}.db.sig" \
               || true
             if [ -f "${{ env.repo_name }}.db" ]; then gpg --verify "${{ env.repo_name }}.db.sig"; fi
-      - name: Upload package to repository and update database
+      - name: Upload packages to repository and update database
         run: |
           for pkgfile in /tmp/packages/*.pkg.tar.zst
           do
@@ -72,14 +72,13 @@ jobs:
               --header "AccessKey: ${{ secrets.BUNNY_ACCESSKEY }}" \
               --header "Content-Type: application/octet-stream" \
               --data-binary "@${pkgfile}.sig"
-            repo-add --sign "${{ env.repo_name }}.db.tar.gz" "${pkgfile}.sig"
+            repo-add --sign "${{ env.repo_name }}.db.tar.gz" "${pkgfile}"
           done
           gpg \
             --detach-sign \
             --pinentry-mode loopback \
             --batch \
             --passphrase "${{ secrets.GPG_PASSPHRASE }}" \
-            -- sign \
             "${{ env.repo_name }}.db.tar.gz"
           curl \
             --request PUT \
