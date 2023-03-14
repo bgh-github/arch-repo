@@ -42,7 +42,7 @@ jobs:
               --pinentry-mode loopback \
               --batch \
               --passphrase "${{ secrets.GPG_PASSPHRASE }}" \
-              "$(ls /tmp/packages/"${pkgdir}"*.pkg.tar.zst)"
+              "$(ls /tmp/packages/"$(basename"${pkgdir}")"*.pkg.tar.zst)"
             done
       - name: Download and verify current repository package database
         run: |
