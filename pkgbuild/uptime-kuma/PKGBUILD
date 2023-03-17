@@ -1,7 +1,7 @@
 # Maintainer: Sylvain Durand <arch@durand.tf>
 
 pkgname=uptime-kuma
-pkgver=1.19.2
+pkgver=1.20.2
 pkgrel=1
 pkgdesc="A free and open source uptime monitoring solution"
 
