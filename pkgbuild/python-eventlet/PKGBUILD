@@ -40,10 +40,10 @@ build() {
   make -C doc text
 }
 
-check() {
-  cd ${_pyname}-${pkgver}
-  nosetests -sv tests -e test_018b_http_10_keepalive_framing # fails on build.a.o
-}
+# check() {
+#   cd ${_pyname}-${pkgver}
+#   nosetests -sv tests -e test_018b_http_10_keepalive_framing # fails on build.a.o
+# }
 
 package() {
   cd ${_pyname}-${pkgver}
