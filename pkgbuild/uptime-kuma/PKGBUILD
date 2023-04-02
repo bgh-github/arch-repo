@@ -1,7 +1,7 @@
 # Maintainer: Sylvain Durand <arch@durand.tf>
 
 pkgname=uptime-kuma
-pkgver=1.20.2
+pkgver=1.21.1
 pkgrel=1
 pkgdesc="A free and open source uptime monitoring solution"
 
@@ -17,8 +17,8 @@ source=(
   "uptime-kuma.service"
 )
 
-sha256sums=('9febdad8bb24caee012a0c79cada6aace88ad3859cf94218512df987ecda009f'
-            '41f0fe9f1d9ec432c98e8bce2f25b59dd61c11f774bd2ad53d5cec1d795fd782'
+sha256sums=('a5bc734acd6626efc482c908f7a509ce37144199a1de10ec8e8299d09fe76a46'
+            '54c9803706326d153372671f42ab76c1cb5ba7592edd1201793c6d7d1934f78a'
             '84ec5db5532ee2e218bc995ef1c04b7a4b9ebe4df198bba99fd031d6b9073796')
 
 package() {
