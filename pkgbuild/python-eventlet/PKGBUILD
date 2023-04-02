@@ -9,7 +9,7 @@ url='https://eventlet.net'
 arch=('any')
 license=('MIT')
 depends=('python' 'python-greenlet' 'python-monotonic' 'python-dnspython')
-makedepends=('python-setuptools' 'python-sphinx')
+makedepends=('python-setuptools' 'python-sphinx' 'python-six')
 checkdepends=('python-psycopg2' 'python-nose' 'python-pyopenssl' 'python-httplib2' 'python-mock' 'python-pyzmq')
 optdepends=(
   'python-psycopg2: non-blocking PostgreSQL support'
